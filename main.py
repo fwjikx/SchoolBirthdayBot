@@ -41,28 +41,44 @@ async def cmd_create(message: types.Message) -> None:
     await message.reply('Ваш анкета успешно создана')
 
 
-@dp.message_handler(commands=['test'])
-async def test(message: types.Message) -> None:
+@dp.message_handler()
+async def test():
     t = time.localtime()
     current_time = time.strftime("%D", t)
     current_time = current_time.split('/')
     current_time = '.'.join([current_time[1], current_time[0], current_time[2]])
     # print(current_time)
     for i in db.get_users():
+        print(i)
         if current_time[:-2] == i[1][:-2]:
-            await bot.send_message('-4169425553', text=f'S DR, @{message.from_user.username}')
+            await bot.send_message('-4169425553', text=f'S DR {i[-1]}')
+
+
+@dp.message_handler(commands="mailing")
+async def mailing(mes):
+    user_id = mes.from_user.id
+    if user_id == 612485708:  # Тут id того, кому можно выполнять команду рассылки
+        await test()
+
+
+async def scheduler():
+    print('zawel')
+    aioschedule.every().day.do(
+        test)  # Тут говорим, что рассылка будет раз в день, отсчет начинается с момента запуска кода
+    while True:
+        await aioschedule.run_pending()
+        await asyncio.sleep(1)
 
 
 async def on_startup(x):
     asyncio.create_task(scheduler())
 
 
-async def scheduler():
-    print('zawel')
-    aioschedule.every().minute.do(test)
-    while True:
-        await aioschedule.run_pending()
-        await asyncio.sleep(1)
+@dp.message_handler(commands="start")
+async def start(mes):
+    user_id = mes.from_user.id
+    await mes.answer("Привет! Тут ты будешь получать рассылку.")
+    # new_user(user_id)
 
 
 @dp.message_handler(commands="mailing")
