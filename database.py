@@ -21,9 +21,8 @@ class Database:
 
     def get_users(self):  # Для рассылки сообщений (В идее проекта это не будет использоваться и сделано на будущее)
         with self.connection:
-            return self.cursor.execute("SELECT `user_id`, `birthday_data` FROM `users`").fetchall()
+            return self.cursor.execute("SELECT `user_id`, `birthday_data`, `name` FROM `users`").fetchall()
 
     def add_birthday(self, birthday_data, user_id):
         with self.connection:
             return self.cursor.execute("UPDATE `users` SET `birthday_data` = ? WHERE `user_id` = ?", (birthday_data, user_id,))
-
