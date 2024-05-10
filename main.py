@@ -7,7 +7,7 @@ import asyncio
 
 db = Database("DataBase/databasee")
 
-API_TOKEN = '6848839856:AAHmIXbflA5egxD1KfeFOTqLzT52CnLAWbQ'
+API_TOKEN = '7016382315:AAHed1BgEc23aiwm6PXewHViZtZ__j5o_aE'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
@@ -26,22 +26,24 @@ async def send_birthday(message: types.Message):
         else:
             print('такой есть уже')
     except Exception as e:
-        print(e)
+        print(e, 'send_birthday')
 
 
 @dp.message_handler(commands=['name'])
 async def cmd_create(message: types.Message) -> None:
     try:
         text = message.text[6:]
+        print(text)
         db.add_name(text, message.from_user.id)
         await message.reply(
             "Ваше имя добавлено. Напишите /age ДЕНЬ.МЕСЯЦ.ГОД - 13.05.99, чтобы добавить дату рождения")
     except Exception as e:
-        print(e)
+        print(e, 'cmd_create')
 
 
 @dp.message_handler(commands=['age'])
 async def cmd_create(message: types.Message) -> None:
+    print('fsa')
     try:
         flag = False
         text = message.text[5:]
@@ -49,16 +51,17 @@ async def cmd_create(message: types.Message) -> None:
             flag = True
         elif int(text[3:5]) not in list(range(1, 13)):
             flag = True
-        elif int(text[1:3]) not in list(range(1, 32)):
+        elif int(text[0:2]) not in list(range(1, 32)):
             flag = True
         if flag:
             await message.reply('Неккоректно введена дата')
         else:
             db.add_birthday(text, message.from_user.id)
+            print(text, message.from_user.id)
 
             await message.reply('Ваш анкета успешно создана')
     except Exception as e:
-        print(e)
+        print(e, 'cmd_create')
 
 
 @dp.message_handler()
@@ -72,9 +75,9 @@ async def test():
         for i in db.get_users():
             print(i)
             if current_time[:-2] == i[1][:-2]:
-                await bot.send_message('-4169425553', text=f'S DR {i[-1]}')
+                await bot.send_message('-4173593040', text=f'S DR {i[-1]}')
     except Exception as e:
-        print(e)
+        print(e, 'test')
 
 
 @dp.message_handler(commands="mailing")
@@ -84,19 +87,18 @@ async def mailing(mes):
         if user_id == 612485708:  # Тут id того, кому можно выполнять команду рассылки
             await test()
     except Exception as e:
-        print(e)
+        print(e, 'mailing')
 
 
 async def scheduler():
     try:
-        print('zawel')
-        aioschedule.every().day.do(
-            test)  # Тут говорим, что рассылка будет раз в день, отсчет начинается с момента запуска кода
+        print('zawel!')
+        aioschedule.every().minute.do(test)  # Тут говорим, что рассылка будет раз в день, отсчет начинается с момента запуска кода
         while True:
             await aioschedule.run_pending()
             await asyncio.sleep(1)
     except Exception as e:
-        print(e)
+        print(e, 'scheduler')
 
 
 async def on_startup(x):
@@ -117,7 +119,7 @@ async def mailing(mes):
         if user_id == 612485708:  # Тут id того, кому можно выполнять команду рассылки
             await test()
     except Exception as e:
-        print(e)
+        print(e, 'mailing')
 
 
 if __name__ == "__main__":
