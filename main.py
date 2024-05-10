@@ -67,6 +67,7 @@ async def cmd_create(message: types.Message) -> None:
 @dp.message_handler()
 async def test():
     try:
+        print('ZAWEL V TEST')
         t = time.localtime()
         current_time = time.strftime("%D", t)
         current_time = current_time.split('/')
@@ -93,7 +94,7 @@ async def mailing(mes):
 async def scheduler():
     try:
         print('zawel!')
-        aioschedule.every().minute.do(test)  # Тут говорим, что рассылка будет раз в день, отсчет начинается с момента запуска кода
+        aioschedule.every().day.at('13:40').do(test)  # Тут говорим, что рассылка будет раз в день, отсчет начинается с момента запуска кода
         while True:
             await aioschedule.run_pending()
             await asyncio.sleep(1)
