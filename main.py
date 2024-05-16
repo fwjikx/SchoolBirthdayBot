@@ -67,18 +67,32 @@ async def cmd_create(message: types.Message) -> None:
 @dp.message_handler()
 async def test():
     try:
-        print('ZAWEL V TEST')
         t = time.localtime()
         current_time = time.strftime("%D", t)
         current_time = current_time.split('/')
         current_time = '.'.join([current_time[1], current_time[0], current_time[2]])
         # print(current_time)
-        for i in db.get_users():
-            print(i)
-            if current_time[:-2] == i[1][:-2]:
-                await bot.send_message('-4173593040', text=f'S DR {i[-1]}')
+        users = db.get_users()
+
+        for user_id, dr, already, name in users:
+            print(current_time[:-3], dr[:5])
+            if current_time[:-3] == dr[:5]:
+                if already == 0:
+                    await bot.send_message('-4173593040', text=f'S DR {name}')
+                    db.set_active(user_id, 1)
     except Exception as e:
         print(e, 'test')
+
+
+@dp.message_handler()
+async def comeback_already():
+    try:
+        users = db.get_users()
+        for user_id, dr, already, name in users:
+            if already == 1:
+                db.set_active(user_id, 0)
+    except Exception as e:
+        print(e, 'comeback_already')
 
 
 @dp.message_handler(commands="mailing")
@@ -93,8 +107,10 @@ async def mailing(mes):
 
 async def scheduler():
     try:
-        print('zawel!')
-        aioschedule.every().day.at('13:40').do(test)  # Тут говорим, что рассылка будет раз в день, отсчет начинается с момента запуска кода
+        print('Бот запущен!')
+        aioschedule.every().minute.do(test)
+        aioschedule.every().day.at('23:59').do(comeback_already)
+
         while True:
             await aioschedule.run_pending()
             await asyncio.sleep(1)
